@@ -11,6 +11,7 @@
     @import "jqtouch/jqtouch.min.css";
     @import "themes/jqt/theme.min.css";
   </style>
+  <script src="http://platform.twitter.com/anywhere.js?id=HkxowhkEB1PEivTQQc8SA&v=1"></script>
   <script src="atnd-touch.js"></script>
 </head>
 <body>
@@ -25,6 +26,7 @@
     <ul class="rounded">
       <li class="arrow"><a class="slide" href="#screen1">画面1</a><small class="counter">4</small></li>
       <li class="arrow"><a class="slide" href="#screen2">画面2</a></li>
+      <li class="arrow"><a class="slide" href="#settings">設定画面</a></li>
     </ul>
     <form action="." method="POST">
       <ul class="form rounded">
@@ -46,23 +48,49 @@
     @satococoa
   </div>
 
-  <!-- サブ画面 -->
-  <div id="screen1">
+  <!-- イベント一覧画面 -->
+  <div id="event-list">
     <!-- ツールバー -->
     <div class="toolbar">
       <a class="back" href="#home">Back</a>
       <h1>ATND touch</h1>
     </div>
-    TEST
+    events
   </div>
 
-  <div id="screen2">
+  <!-- イベント詳細画面 -->
+  <div id="event-desc">
     <!-- ツールバー -->
     <div class="toolbar">
       <a class="back" href="#home">Back</a>
       <h1>ATND touch</h1>
     </div>
-    TEST2
+    event desc
   </div>
+
+  <!-- ユーザー画面 -->
+  <div id="user">
+    <!-- ツールバー -->
+    <div class="toolbar">
+      <a class="back" href="#home">Back</a>
+      <h1>ATND touch</h1>
+    </div>
+    user
+  </div>
+
+  <!-- 設定画面 -->
+  <div id="settings">
+    <!-- ツールバー -->
+    <div class="toolbar">
+      <a class="back" href="#home">Back</a>
+      <h1>ATND touch</h1>
+    </div>
+    <h2>Twitterアカウントでログイン</h2>
+    <ul class="rounded">
+      <li id="login"><span id="loginButton"></span></li>
+      <li id="logout">Logout</li>
+    </ul>
+  </div>
+
 </body>
 </html>
