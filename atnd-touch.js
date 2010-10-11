@@ -135,6 +135,8 @@ function loadEventList(events) {
 function loadEventDesc(event) {
   $('#title').text(event['title']);
   $('#catch').text(event['catch']);
+  $('#description').html(event['description']);
+  $('#event_url').append($('a').attributes('href', event['event_url']).text(event['event_url']));
 }
 
 function getUsers(option, callback) {
