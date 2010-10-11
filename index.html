@@ -20,29 +20,41 @@
     <!-- ツールバー -->
     <div class="toolbar">
       <h1>ATND touch</h1>
-      <a class="button cube" href="#about">About</a>
+      <a class="button flip" href="#about">About</a>
     </div>
-    <!-- メニュー -->
-    <ul class="rounded">
-      <li class="arrow"><a class="slide" href="#screen1">画面1</a><small class="counter">4</small></li>
-      <li class="arrow"><a class="slide" href="#screen2">画面2</a></li>
-      <li class="arrow"><a class="slide" href="#settings">設定画面</a></li>
-    </ul>
-    <form action="." method="POST">
+
+    <!-- 検索フォーム -->
+    <h2>検索</h2>
+    <form id="search-form" action="." method="GET">
       <ul class="form rounded">
         <li><input type="text" name="keyword" placeholder="検索文字列"></li>
-        <li><input type="text" name="keyword" placeholder="検索文字列"></li>
-        <li><input type="text" name="keyword" placeholder="検索文字列"></li>
-        <li><input type="text" name="keyword" placeholder="検索文字列"></li>
       </ul>
-      <a href="#" class="submit grayButton">Search</a>
+      <ul class="individual">
+        <li><a href="#" class="submit">Search</a></li>
+      </ul>
     </form>
+
+    <!-- メニュー -->
+    <h2>イベント</h2>
+    <ul class="rounded">
+      <li class="arrow">
+      <a class="slide" id="bookmark-events" href="#event-list">ブックマーク</a>
+      <small class="counter">#</small>
+      </li>
+
+      <li class="arrow">
+      <a class="slide" id="self-events" href="#event-list">参加イベント</a>
+      <small class="counter">#</small>
+      </li>
+
+      <li class="arrow"><a class="slide" href="#settings">設定画面</a></li>
+    </ul>
   </div>
 
   <div id="about">
     <!-- ツールバー -->
     <div class="toolbar">
-      <a class="back" href="#home">Back</a>
+      <a href="#home">戻る</a>
       <h1>ATND touch</h1>
     </div>
     @satococoa
@@ -88,7 +100,7 @@
     <h2>Twitterアカウントでログイン</h2>
     <ul class="rounded">
       <li id="login"><span id="loginButton"></span></li>
-      <li id="logout">Logout</li>
+      <li id="logout"><a id="logoutButton" href="#">Logout</a></li>
     </ul>
   </div>
 

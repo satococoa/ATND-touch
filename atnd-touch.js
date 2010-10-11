@@ -3,17 +3,42 @@ var jQT = new $.jQTouch({
   startupScreen: 'atnd-touch-startup.png',
   statusBar: 'black-translucent',
   preloadImages: [
-    'themes/jqt/img/chevron_white.png',
-    'themes/jqt/img/bg_row_select.gif',
     'themes/jqt/img/back_button_clicked.png',
     'themes/jqt/img/button_clicked.png'
   ]
 });
 
+function getEvents(option, callback) {
+  var defaultOption = {
+    start: 1,
+    count: 11,
+    format: 'jsonp',
+  };
+
+  var query = defaultOption;
+
+  $.each(option, function(key, val) {
+    query[key] = val;
+  });
+
+  $.getJSON(
+    'http://api.atnd.org/events/?callback=?',
+    query,
+    callback
+  );
+}
+
+function getUsers(option, callback) {
+  return true; // dummy 
+}
+
+var selfEvents, searchEvents, bookmarkEvents;
+
 $(function(){
   window.scrollTo(0, 0);
 
-  // ログインしていなければ、ログインを促す
+  $('#bookmark-events+.counter').text(0);
+
   twttr.anywhere(function(T) {
     var currentUser, screenName, profileImage, profileImage, profileImageTag;
 
@@ -25,6 +50,14 @@ $(function(){
       $('#settings').removeClass('current');
       $('#home').addClass('current');
       $('#logout').show();
+
+      // 自身の参加イベントを取得
+      getEvents({twitter_id: screenName, count: 999}, function(data){
+        selfEvents = data.events;
+        var counter = data.results_returned;
+        $('#self-events+.counter').text(counter);
+      });
+
     };
 
     var unauthorized = function() {
@@ -32,6 +65,7 @@ $(function(){
       $('#logout').hide();
     };
 
+    // ログインしていなければ、ログインを促す
     if (T.isConnected()) {
       authorized(T.currentUser);
     } else {
@@ -47,10 +81,10 @@ $(function(){
     });
 
     T('#loginButton').connectButton();
-    $('#logout').tap(function(e) {
+    $('#logoutButton').tap(function(e) {
       twttr.anywhere.signOut();
     });
-    $('#logout').click(function(e) {
+    $('#logoutButton').click(function(e) {
       twttr.anywhere.signOut();
     });
   });
