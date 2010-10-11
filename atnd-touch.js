@@ -14,7 +14,7 @@ var selfEvents, searchEvents, bookmarkEvents;
 function getEvents(option, callback) {
   var defaultOption = {
     start: 1,
-    count: 11,
+    count: 31,
     format: 'jsonp'
   };
 
@@ -38,18 +38,63 @@ function loadEventList(events) {
   eventsList.children().each(function(){
     $(this).remove();
   });
+
+  // 時系列に並べ替え
+  var sort = function(list) {
+    if (list.length <= 1) {
+      return list;
+    }
+    
+    var center = list[parseInt(list.length/2)];
+
+    var sorter = function (compare) {
+      return function(i) {
+        var center_date = center.started_at.split('T')[0].replace(/-/g, '');
+        if (compare(list[i].started_at.split('T')[0].replace(/-/g, ''), center_date)) {
+          return true;
+        } else {
+          return false;
+        }
+      };
+    };
+
+    var smaller = $(list).filter(sorter(function(a, b){
+      if (a < b) {
+        return true;
+      }
+    }));
+    var equal = $(list).filter(sorter(function(a, b){
+      if (a == b) {
+        return true;
+      }
+    }));
+    var greater = $(list).filter(sorter(function(a, b){
+      if (a > b) {
+        return true;
+      }
+    }));
+    
+    var returnValue = [];
+    $.each(sort(smaller), function(i, val){
+      returnValue.push(val);
+    });
+    $.each(equal, function(i, val){
+      returnValue.push(val);
+    });
+    $.each(sort(greater), function(i, val){
+      returnValue.push(val);
+    });
+
+    return returnValue;
+  };
+
+  sorted_events = sort(events).reverse();
   
   var date = '';
-  $.each(events, function(i, event) {
+  $.each(sorted_events, function(i, event) {
     var list = $('<li class="arrow"/>');
 
     var start_date = event.started_at.split('T')[0];
-    var start_time = event.started_at.split('T')[1];
-    var end_date = event.ended_at.split('T')[0];
-    if (start_date == end_date) {
-      end_date = '';
-    }
-    var end_time = event.ended_at.split('T')[1];
     if (date != start_date) {
       $('<li class="sep">').text(start_date).appendTo(eventsList);
       date = start_date;
