@@ -9,7 +9,7 @@ var jQT = new $.jQTouch({
 });
 
 // 関数、グローバル変数
-var selfEvents, searchEvents, bookmarkEvents;
+var selfEvents, searchEvents, bookmarkEvents, eventDesc;
 
 function getEvents(option, callback) {
   var defaultOption = {
@@ -30,6 +30,26 @@ function getEvents(option, callback) {
     callback
   );
 }
+
+function getEventDesc(option, callback) {
+  var defaultOption = {
+    start: 1,
+    count: 1,
+    format: 'jsonp'
+  };
+
+  var query = defaultOption;
+
+  $.each(option, function(key, val) {
+    query[key] = val;
+  });
+
+  $.getJSON(
+    'http://api.atnd.org/events/?callback=?',
+    query,
+    callback
+  );
+};
 
 function loadEventList(events) {
   var eventsList = $('#events');
@@ -100,12 +120,21 @@ function loadEventList(events) {
       date = start_date;
     }
 
-    var link = $('<a href="#">').text(event.title);
+    var link = $('<a id="event_' + event.event_id + '" href="#event-desc">').text(event.title);
+    link.bind('tap', function(e) {
+      getEventDesc({event_id: event.event_id}, function(data) {
+        eventDesc = data.events[0];
+        loadEventDesc(eventDesc);
+      });
+    });
+
     list.append(link).appendTo(eventsList);
   });
+}
 
-  // リストを表示
-  jQT.goTo('#events-list', 'slide');
+function loadEventDesc(event) {
+  $('#title').text(event['title']);
+  $('#catch').text(event['catch']);
 }
 
 function getUsers(option, callback) {
@@ -117,17 +146,25 @@ $(function(){
   window.scrollTo(0, 0);
 
   $('#search-form').submit(function(e){
-    e.preventDefault();
-    e.stopPropagation();
-
     // 検索
     var keyword = e.target.elements['keyword'].value;
     getEvents({keyword: keyword}, function(data){
       searchEvents = data.events;
       loadEventList(searchEvents);
     });
+
+    // リストを表示
+    jQT.goTo('#events-list', 'slide');
+
+    e.preventDefault();
+    e.stopPropagation();
   });
 
+  $('#self-events').bind('tap', function(e){
+    loadEventList(selfEvents);
+  });
+
+  // TODO: ブックマーク機能
   $('#bookmark-events+.counter').text(0);
 
   twttr.anywhere(function(T) {
@@ -143,7 +180,7 @@ $(function(){
       $('#logout').show();
 
       // 自身の参加イベントを取得
-      getEvents({twitter_id: screenName, count: 999}, function(data){
+      getEvents({twitter_id: screenName, count: 31}, function(data){
         selfEvents = data.events;
         var counter = data.results_returned;
         $('#self-events+.counter').text(counter);
@@ -172,10 +209,7 @@ $(function(){
     });
 
     T('#loginButton').connectButton();
-    $('#logoutButton').tap(function(e) {
-      twttr.anywhere.signOut();
-    });
-    $('#logoutButton').click(function(e) {
+    $('#logoutButton').bind('tap', function(e) {
       twttr.anywhere.signOut();
     });
   });
