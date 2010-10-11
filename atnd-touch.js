@@ -8,11 +8,14 @@ var jQT = new $.jQTouch({
   ]
 });
 
+// 関数、グローバル変数
+var selfEvents, searchEvents, bookmarkEvents;
+
 function getEvents(option, callback) {
   var defaultOption = {
     start: 1,
     count: 11,
-    format: 'jsonp',
+    format: 'jsonp'
   };
 
   var query = defaultOption;
@@ -28,14 +31,57 @@ function getEvents(option, callback) {
   );
 }
 
+function loadEventList(events) {
+  var eventsList = $('#events');
+
+  // クリア
+  eventsList.children().each(function(){
+    $(this).remove();
+  });
+  
+  var date = '';
+  $.each(events, function(i, event) {
+    var list = $('<li class="arrow"/>');
+
+    var start_date = event.started_at.split('T')[0];
+    var start_time = event.started_at.split('T')[1];
+    var end_date = event.ended_at.split('T')[0];
+    if (start_date == end_date) {
+      end_date = '';
+    }
+    var end_time = event.ended_at.split('T')[1];
+    if (date != start_date) {
+      $('<li class="sep">').text(start_date).appendTo(eventsList);
+      date = start_date;
+    }
+
+    var link = $('<a href="#">').text(event.title);
+    list.append(link).appendTo(eventsList);
+  });
+
+  // リストを表示
+  jQT.goTo('#events-list', 'slide');
+}
+
 function getUsers(option, callback) {
   return true; // dummy 
 }
 
-var selfEvents, searchEvents, bookmarkEvents;
-
+// 初期化処理
 $(function(){
   window.scrollTo(0, 0);
+
+  $('#search-form').submit(function(e){
+    e.preventDefault();
+    e.stopPropagation();
+
+    // 検索
+    var keyword = e.target.elements['keyword'].value;
+    getEvents({keyword: keyword}, function(data){
+      searchEvents = data.events;
+      loadEventList(searchEvents);
+    });
+  });
 
   $('#bookmark-events+.counter').text(0);
 

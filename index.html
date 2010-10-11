@@ -38,12 +38,12 @@
     <h2>イベント</h2>
     <ul class="rounded">
       <li class="arrow">
-      <a class="slide" id="bookmark-events" href="#event-list">ブックマーク</a>
+      <a class="slide" id="bookmark-events" href="#events-list">ブックマーク</a>
       <small class="counter">#</small>
       </li>
 
       <li class="arrow">
-      <a class="slide" id="self-events" href="#event-list">参加イベント</a>
+      <a class="slide" id="self-events" href="#events-list">参加イベント</a>
       <small class="counter">#</small>
       </li>
 
@@ -54,20 +54,21 @@
   <div id="about">
     <!-- ツールバー -->
     <div class="toolbar">
-      <a href="#home">戻る</a>
       <h1>ATND touch</h1>
     </div>
     @satococoa
+    <a href="#" class="grayButton goback">Close</a>
   </div>
 
   <!-- イベント一覧画面 -->
-  <div id="event-list">
+  <div id="events-list">
     <!-- ツールバー -->
     <div class="toolbar">
       <a class="back" href="#home">Back</a>
       <h1>ATND touch</h1>
     </div>
-    events
+    <ul id="events" class="edgetoedge">
+    </ul>
   </div>
 
   <!-- イベント詳細画面 -->
