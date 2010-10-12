@@ -13,6 +13,7 @@
   </style>
   <script src="http://platform.twitter.com/anywhere.js?id=HkxowhkEB1PEivTQQc8SA&v=1"></script>
   <script src="atnd-touch.js"></script>
+  <link rel="stylesheet" href="atnd-touch.css">
 </head>
 <body>
   <!-- ホーム画面 -->
@@ -78,11 +79,21 @@
       <a class="back" href="#events-list">Back</a>
       <h1>ATND touch</h1>
     </div>
+    <div id="content">
+      <h3 id="title"></h3>
+      <p id="catch"></p>
+    </div>
+
+    <h2>詳細情報</h2>
     <ul class="rounded">
-      <li id="title"></li>
-      <li id="catch"></li>
-      <li id="description"></li>
-      <li id="event_url"></li>
+      <li id="date"></li>
+      <li id="limit"></li>
+      <li class="forward" id="place"></li>
+      <li class="forward" id="event_url"></li>
+    </ul>
+
+    <h2>参加者</h2>
+    <ul class="rounded" id="users">
     </ul>
   </div>
 

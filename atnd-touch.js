@@ -59,6 +59,10 @@ function loadEventList(events) {
     $(this).remove();
   });
 
+  if (events.length == 0) {
+    eventsList.append('<li><a href="#">イベントが見つかりません...</a></li>');
+  }
+
   // 時系列に並べ替え
   var sort = function(list) {
     if (list.length <= 1) {
@@ -135,8 +139,30 @@ function loadEventList(events) {
 function loadEventDesc(event) {
   $('#title').text(event['title']);
   $('#catch').text(event['catch']);
-  $('#description').html(event['description']);
-  $('#event_url').append($('a').attributes('href', event['event_url']).text(event['event_url']));
+
+  var started_at = event['started_at'].split('T');
+  var start_date = started_at[0];
+  var start_time = started_at[1].replace(/^(\d{2}):(\d{2}):(\d{2}).+/, '\1:\2');
+
+  var ended_at = event['ended_at'].split('T');
+  var end_date = ended_at[0];
+  if (start_date == end_date) {
+    end_date = '';
+  }
+  var end_time = ended_at[1].replace(/^(\d{2}):(\d{2}):(\d{2}).+/, '\1:\2');
+
+  $('#date').text('日時: ' + [start_date, start_time, 'to', end_date, end_time].join(' '));
+  $('#limit').text('参加人数: ' + event['accepted']);
+  if (event['limit'] > 0) {
+    $('#limit').append(' / ' + event['limit']);
+  }
+  
+  $('#place').text('場所: ' + event['place']);
+  if (!!event['address']) {
+    $('#place').append("\n(" + event['address'] + ')');
+  }
+
+  $('#event_url').append($('<a target="_blank"/>').attr('href', event['event_url']).text('ATNDで開く'));
 }
 
 function getUsers(option, callback) {
@@ -150,9 +176,11 @@ $(function(){
   $('#search-form').submit(function(e){
     // 検索
     var keyword = e.target.elements['keyword'].value;
+    $('#events-list').append('<div id="progress">読み込み中...</div>');
     getEvents({keyword: keyword}, function(data){
       searchEvents = data.events;
       loadEventList(searchEvents);
+      $('#progress').remove();
     });
 
     // リストを表示
@@ -163,7 +191,9 @@ $(function(){
   });
 
   $('#self-events').bind('tap', function(e){
+    $('#events-list').append('<div id="progress">読み込み中...</div>');
     loadEventList(selfEvents);
+    $('#progress').remove();
   });
 
   // TODO: ブックマーク機能
