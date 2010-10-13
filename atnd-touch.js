@@ -142,14 +142,14 @@ function loadEventDesc(event) {
 
   var started_at = event['started_at'].split('T');
   var start_date = started_at[0];
-  var start_time = started_at[1].replace(/^(\d{2}):(\d{2}):(\d{2}).+/, '\1:\2');
+  var start_time = started_at[1].replace(/(\d{2}):(\d{2}):(\d{2}).+/, '$1:$2');
 
   var ended_at = event['ended_at'].split('T');
   var end_date = ended_at[0];
   if (start_date == end_date) {
     end_date = '';
   }
-  var end_time = ended_at[1].replace(/^(\d{2}):(\d{2}):(\d{2}).+/, '\1:\2');
+  var end_time = ended_at[1].replace(/(\d{2}):(\d{2}):(\d{2}).+/, '$1:$2');
 
   $('#date').text('日時: ' + [start_date, start_time, 'to', end_date, end_time].join(' '));
   $('#limit').text('参加人数: ' + event['accepted']);
@@ -162,6 +162,7 @@ function loadEventDesc(event) {
     $('#place').append("\n(" + event['address'] + ')');
   }
 
+  $('#event_url').children().remove();
   $('#event_url').append($('<a target="_blank"/>').attr('href', event['event_url']).text('ATNDで開く'));
 }
 
