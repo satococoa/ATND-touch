@@ -13,7 +13,6 @@
     @import "jqtouch/jqtouch.min.css";
     @import "themes/jqt/theme.min.css";
   </style>
-  <script src="http://platform.twitter.com/anywhere.js?id=HkxowhkEB1PEivTQQc8SA&v=1"></script>
   <script src="atnd-touch.js"></script>
   <link rel="stylesheet" href="atnd-touch.css">
 </head>
@@ -101,11 +100,16 @@
       <a class="back" href="#home">Back</a>
       <h1>ATND touch</h1>
     </div>
-    <h2>Twitterアカウントを入力</h2>
-    <ul class="rounded">
-      <li id="login"><span id="loginButton"></span></li>
-      <li id="logout"><a id="logoutButton" href="#">Logout</a></li>
-    </ul>
+    <div id="message"></div>
+    <h2>Twitterアカウント</h2>
+    <form id="settings-form" action="." method="GET">
+      <ul class="form rounded">
+        <li><input type="text" id="twitter_id" value="" placeholder="TwitterID"></li>
+      </ul>
+      <ul class="individual">
+        <li><a href="#" class="submit">設定</a></li>
+      </ul>
+    </form>
   </div>
 
 </body>

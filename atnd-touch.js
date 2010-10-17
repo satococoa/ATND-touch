@@ -262,54 +262,41 @@ $(function(){
     $('#progress').remove();
   });
 
-  // TODO: ブックマーク機能
-  $('#bookmark-events+.counter').text(0);
+  // 自身の参加イベントを取得
+  var twitter_id = localStorage.twitter_id;
+  if (!!twitter_id) {
+    $('#twitter_id').val(twitter_id);
+    getEvents({twitter_id: twitter_id, count: 31}, function(data){
+      selfEvents = data.events;
+      var counter = data.results_returned;
+      $('#self-events+.counter').text(counter);
+    });
+  } else {
+    jQT.goTo('#settings');
+  }
 
-  twttr.anywhere(function(T) {
-    var currentUser, screenName, profileImage, profileImage, profileImageTag;
+  $('#settings-form').submit(function(e){
+    var twitter_id = $('#twitter_id').val();
+    if (!!twitter_id) {
+      // 設定を保存
+      localStorage.twitter_id = twitter_id;
 
-    var authorized = function(user) {
-      currentUser = user;
-      screenName = currentUser.data('screen_name');
-      profileImage = currentUser.data('profile_image_url');
-      profileImageTag = '<img width="16" height="16" src="' + profileImage + '"/>';
-      $('#settings').removeClass('current');
-      $('#home').addClass('current');
-      $('#logout').show();
-
-      // 自身の参加イベントを取得
-      getEvents({twitter_id: screenName, count: 31}, function(data){
+      // リストを表示
+      getEvents({twitter_id: twitter_id, count: 31}, function(data){
         selfEvents = data.events;
         var counter = data.results_returned;
         $('#self-events+.counter').text(counter);
       });
+      $('#message').text('');
 
-    };
-
-    var unauthorized = function() {
-      $('#settings').addClass('current');
-      $('#logout').hide();
-    };
-
-    // ログインしていなければ、ログインを促す
-    if (T.isConnected()) {
-      authorized(T.currentUser);
+      jQT.goTo('#home', 'slide', true);
     } else {
-      unauthorized();
+      localStorage.twitter_id = $('#twitter_id').val();
+      $('#self-events+.counter').text('#');
+      $('#message').text('TwitterIDを入力してください。');
     }
 
-    T.bind('authComplete', function(e, user) {
-      authorized(user);
-    });
-
-    T.bind('signOut', function(e) {
-      unauthorized();
-    });
-
-    T('#loginButton').connectButton();
-    $('#logoutButton').bind('tap', function(e) {
-      twttr.anywhere.signOut();
-    });
+    e.preventDefault();
+    e.stopPropagation();
   });
-
 });
