@@ -73,8 +73,8 @@ function loadEventList(events) {
 
     var sorter = function (compare) {
       return function(i) {
-        var center_date = center.started_at.split('T')[0].replace(/-/g, '');
-        if (compare(list[i].started_at.split('T')[0].replace(/-/g, ''), center_date)) {
+        var center_date = center.started_at.replace(/[-T: +]/g, '');
+        if (compare(list[i].started_at.replace(/[-T: +]/g, ''), center_date)) {
           return true;
         } else {
           return false;
@@ -124,7 +124,14 @@ function loadEventList(events) {
       date = start_date;
     }
 
-    var link = $('<a id="event_' + event.event_id + '" href="#event-desc">').text(event.title);
+    var title = $('<p/>').text(event.title);
+    var place = $('<p class="sub"/>').text(event.place);
+    var time = $('<p class="sub"/>').text(getDateString(event.started_at, event.ended_at));
+
+    var link = $('<a id="event_' + event.event_id + '" href="#event-desc">')
+                .append(title)
+                .append(time)
+                .append(place);
     link.bind('tap', function(e) {
       getEventDesc({event_id: event.event_id}, function(data) {
         eventDesc = data.events[0];
@@ -136,22 +143,28 @@ function loadEventList(events) {
   });
 }
 
+function getDateString(start, end) {
+  var started_at = start.split('T');
+  var start_date = started_at[0];
+  var start_time = started_at[1].replace(/(\d{2}):(\d{2}):(\d{2}).+/, '$1:$2');
+
+  if (!!end) {
+    var ended_at = end.split('T');
+    var end_date = ended_at[0];
+    if (start_date == end_date) {
+      end_date = '';
+    }
+    var end_time = ended_at[1].replace(/(\d{2}):(\d{2}):(\d{2}).+/, '$1:$2');
+  }
+
+  return [start_date, start_time, 'to', end_date, end_time].join(' ');
+}
+
 function loadEventDesc(event) {
   $('#title').text(event['title']);
   $('#catch').text(event['catch']);
 
-  var started_at = event['started_at'].split('T');
-  var start_date = started_at[0];
-  var start_time = started_at[1].replace(/(\d{2}):(\d{2}):(\d{2}).+/, '$1:$2');
-
-  var ended_at = event['ended_at'].split('T');
-  var end_date = ended_at[0];
-  if (start_date == end_date) {
-    end_date = '';
-  }
-  var end_time = ended_at[1].replace(/(\d{2}):(\d{2}):(\d{2}).+/, '$1:$2');
-
-  $('#date').text('日時: ' + [start_date, start_time, 'to', end_date, end_time].join(' '));
+  $('#date').text('日時: ' + getDateString(event['started_at'], event['ended_at']));
   $('#limit').text('参加人数: ' + event['accepted']);
   if (event['limit'] > 0) {
     $('#limit').append(' / ' + event['limit']);
