@@ -9,7 +9,7 @@ var jQT = new $.jQTouch({
 });
 
 // 関数、グローバル変数
-var selfEvents, searchEvents, bookmarkEvents, eventDesc, map;
+var selfEvents, searchEvents, bookmarkEvents, eventDesc, users;
 
 function getEvents(option, callback) {
   var defaultOption = {
@@ -134,6 +134,10 @@ function loadEventList(events) {
                 .append(place);
     link.bind('tap', function(e) {
       $('#events-desc').append('<div id="progress">読み込み中...</div>');
+      getUsers({event_id: event.event_id}, function(data) {
+        users = data.events[0].users;
+        loadUsers(users);
+      });
       getEventDesc({event_id: event.event_id}, function(data) {
         eventDesc = data.events[0];
         loadEventDesc(eventDesc);
@@ -198,7 +202,30 @@ function loadEventDesc(event) {
 }
 
 function getUsers(option, callback) {
-  return true; // dummy 
+  var defaultOption = {
+    start: 1,
+    count: 200,
+    format: 'jsonp'
+  };
+
+  var query = defaultOption;
+
+  $.each(option, function(key, val) {
+    query[key] = val;
+  });
+
+  $.getJSON(
+    'http://api.atnd.org/events/users/?callback=?',
+    query,
+    callback
+  );
+}
+
+function loadUsers(users) {
+  var userList = $('#users');
+  $.each(users, function(i, user) {
+    $('<li/>').text(user.nickname).appendTo(userList);
+  });
 }
 
 // 初期化処理
