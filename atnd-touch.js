@@ -185,7 +185,7 @@ function loadEventDesc(event) {
                           'http://www.google.co.jp/maps?q='
                           +event['lat']+','+event['lon']
                           +'('+event['place']+')'
-                          +'&z=17'
+                          +'&z=19'
                          );
     $('#place').addClass('forward').append(placeLink);
   } else {
