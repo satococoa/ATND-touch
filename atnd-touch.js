@@ -289,7 +289,7 @@ $(function(){
       });
       $('#message').text('');
 
-      jQT.goTo('#home', 'slide', true);
+      jQT.goTo('#home', 'flip', true);
     } else {
       localStorage.twitter_id = $('#twitter_id').val();
       $('#self-events+.counter').text('#');
