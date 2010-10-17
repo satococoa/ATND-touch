@@ -9,7 +9,7 @@ var jQT = new $.jQTouch({
 });
 
 // 関数、グローバル変数
-var selfEvents, searchEvents, bookmarkEvents, eventDesc;
+var selfEvents, searchEvents, bookmarkEvents, eventDesc, map;
 
 function getEvents(option, callback) {
   var defaultOption = {
@@ -133,9 +133,11 @@ function loadEventList(events) {
                 .append(time)
                 .append(place);
     link.bind('tap', function(e) {
+      $('#events-desc').append('<div id="progress">読み込み中...</div>');
       getEventDesc({event_id: event.event_id}, function(data) {
         eventDesc = data.events[0];
         loadEventDesc(eventDesc);
+        $('#progress').remove();
       });
     });
 
@@ -170,9 +172,25 @@ function loadEventDesc(event) {
     $('#limit').append(' / ' + event['limit']);
   }
   
-  $('#place').text('場所: ' + event['place']);
+  $('#place').children().remove();
+  var placeStr = event['place'];
   if (!!event['address']) {
-    $('#place').append("\n(" + event['address'] + ')');
+    placeStr += "\n(" + event['address'] + ')';
+  }
+
+  if (!!event['lat'] && !!event['lon']) {
+    var placeLink = $('<a target="_blank"/>')
+                    .text(placeStr)
+                    .attr('href',
+                          'http://www.google.co.jp/maps?q='
+                          +event['lat']+','+event['lon']
+                          +'('+event['place']+')'
+                          +'&z=17'
+                         );
+    $('#place').addClass('forward').append(placeLink);
+  } else {
+    $('#place').text(placeStr);
+    $('#place').removeClass('forward');
   }
 
   $('#event_url').children().remove();
@@ -259,4 +277,5 @@ $(function(){
       twttr.anywhere.signOut();
     });
   });
+
 });
