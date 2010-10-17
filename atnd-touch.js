@@ -223,8 +223,15 @@ function getUsers(option, callback) {
 
 function loadUsers(users) {
   var userList = $('#users');
+  userList.children().remove();
   $.each(users, function(i, user) {
-    $('<li/>').text(user.nickname).appendTo(userList);
+    var userItem = $('<li/>');
+    var userLink = $('<a/>').text(user.nickname);
+    if (!!user.twitter_id) {
+      userItem.addClass('forward');
+      userLink.attr({href: 'http://twitter.com/'+user.twitter_id, target: '_blank'});
+    }
+    userItem.append(userLink).appendTo(userList);
   });
 }
 
