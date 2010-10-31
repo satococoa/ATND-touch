@@ -145,10 +145,10 @@ function loadEventList(events) {
         eventDesc = data.events[0];
         loadEventDesc(eventDesc);
         $('#progress').remove();
-      });
 
-      // 詳細を表示
-      jQT.goTo('#event-desc', 'slide');
+        // 詳細を表示
+        jQT.goTo('#event-desc', 'slide');
+      });
     });
 
     list.append(link).appendTo(eventsList);
