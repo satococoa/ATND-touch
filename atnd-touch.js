@@ -136,7 +136,7 @@ function loadEventList(events) {
       e.preventDefault();
       e.stopPropagation();
 
-      $('#event-desc').append('<div id="progress">読み込み中...</div>');
+      $('#events-list').append('<div id="progress">読み込み中...</div>');
       getUsers({event_id: event.event_id}, function(data) {
         users = data.events[0].users;
         loadUsers(users);
@@ -145,10 +145,10 @@ function loadEventList(events) {
         eventDesc = data.events[0];
         loadEventDesc(eventDesc);
         $('#progress').remove();
-      });
 
-      // 詳細を表示
-      jQT.goTo('#event-desc', 'slide');
+        // 詳細を表示
+        jQT.goTo('#event-desc', 'slide');
+      });
     });
 
     list.append(link).appendTo(eventsList);
