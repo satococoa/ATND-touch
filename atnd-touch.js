@@ -133,7 +133,7 @@ function loadEventList(events) {
                 .append(time)
                 .append(place);
     link.bind('tap', function(e) {
-      $('#events-desc').append('<div id="progress">読み込み中...</div>');
+      $('#event-desc').append('<div id="progress">読み込み中...</div>');
       getUsers({event_id: event.event_id}, function(data) {
         users = data.events[0].users;
         loadUsers(users);
