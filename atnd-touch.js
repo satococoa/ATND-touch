@@ -133,6 +133,9 @@ function loadEventList(events) {
                 .append(time)
                 .append(place);
     link.bind('tap', function(e) {
+      e.preventDefault();
+      e.stopPropagation();
+
       $('#event-desc').append('<div id="progress">読み込み中...</div>');
       getUsers({event_id: event.event_id}, function(data) {
         users = data.events[0].users;
@@ -143,6 +146,9 @@ function loadEventList(events) {
         loadEventDesc(eventDesc);
         $('#progress').remove();
       });
+
+      // 詳細を表示
+      jQT.goTo('#event-desc', 'slide');
     });
 
     list.append(link).appendTo(eventsList);
