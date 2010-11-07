@@ -397,6 +397,7 @@ $(function(){
 
     localStorage.bookmarks = '';
     refreshBookmarkCounter();
+    e.target.removeClass('active');
   });
 
   $('#settings-form').submit(function(e){
