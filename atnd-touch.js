@@ -230,6 +230,8 @@ function loadEventDesc(event) {
       addToBookmark(event['event_id']);
       bm_btn.text('ブックマーク外す');
     }
+
+    bm_btn.removeClass('active');
   });
 }
 
@@ -270,7 +272,11 @@ function loadUsers(users) {
 function refreshBookmarkCounter() {
   var stored = localStorage.bookmarks;
   if (!!stored) {
-    $('#bookmark-events+.counter').text(localStorage.bookmarks.split(',').length);
+    if (localStorage.bookmarks.match(/,/)) {
+      $('#bookmark-events+.counter').text(localStorage.bookmarks.split(',').length);
+    } else {
+      $('#bookmark-events+.counter').text('1');
+    }
   } else {
     $('#bookmark-events+.counter').text('0');
   }
@@ -279,7 +285,14 @@ function refreshBookmarkCounter() {
 function addToBookmark(event_id) {
   var stored = localStorage.bookmarks;
   if (!!stored) {
-    localStorage.bookmarks = stored.split(',').push(event_id).join(',');
+    var new_stored = [];
+    if (stored.match(/,/)) {
+      new_stored = stored.split(',');
+      new_stored.push(event_id);
+      localStorage.bookmarks = new_stored.join(',');
+    } else {
+      localStorage.bookmarks = stored+','+event_id;
+    }
   } else {
     localStorage.bookmarks = event_id;
   }
@@ -288,28 +301,39 @@ function addToBookmark(event_id) {
 
 function bookmarked(event_id) {
   var stored = localStorage.bookmarks;
+  var flag = false;
   if (!!stored) {
-    $.each(stored.split(','), function(i) {
-      if (i == event_id) {
-        return true;
-      }
-    });
+    if (stored.match(/,/)) {
+      var stored_list = stored.split(',');
+      $.each(stored_list, function(i) {
+        if (stored_list[i] == event_id) {
+          flag = true;
+        }
+      });
+    } else {
+      if (stored == event_id) flag = true;
+    }
   }
-  refreshBookmarkCounter();
-  return false;
+  return flag;
 }
 
 function delFromBookmark(event_id) {
   var stored = localStorage.bookmarks;
   if (!stored) return;
 
-  var new_stored = [];
-  $.each(stored.split(','), function(i) {
-    if (i != event_id) {
-      new_stored.push(i);
-    }
-  });
-  localStorage.bookmarks = new_stored.join(',');
+  if (stored.match(/,/)) {
+    var new_stored = [];
+    var stored_list = stored.split(',');
+    $.each(stored_list, function(i) {
+      if (stored_list[i] != event_id) {
+        new_stored.push(stored_list[i]);
+      }
+    });
+    localStorage.bookmarks = new_stored.join(',');
+  } else if (stored == event_id) {
+    localStorage.bookmarks = '';
+  }
+  refreshBookmarkCounter();
 }
 
 // 初期化処理
@@ -353,17 +377,18 @@ $(function(){
   }
 
   // ブックマーク機能
-  var bookmarks = localStorage.bookmarks;
-  if (!!bookmarks) {
-    $('#bookmark-events+.counter').text(bookmarks.length);
-  } else {
-    $('#bookmark-events+.counter').text('0');
-  }
-
-  $('#bookmark-events').bind('tap', function(e){
+  refreshBookmarkCounter();
+  $('#bookmark-events').bind('click', function(e){
     $('#events-list').append('<div id="progress">読み込み中...</div>');
-    loadEventList(bookmarkEvents);
-    $('#progress').remove();
+    if (!!localStorage.bookmarks) {
+      getEvents({event_id: localStorage.bookmarks.split(','), count: 31}, function(data){
+        bookmarkEvents = data.events;
+        loadEventList(bookmarkEvents);
+        $('#progress').remove();
+      });
+    } else {
+      $('#progress').remove();
+    }
   });
 
   $('#bookmark-reset-button').bind('tap', function(e){
@@ -371,7 +396,7 @@ $(function(){
     e.stopPropagation();
 
     localStorage.bookmarks = '';
-    $('#bookmark-events+.counter').text('0');
+    refreshBookmarkCounter();
   });
 
   $('#settings-form').submit(function(e){
