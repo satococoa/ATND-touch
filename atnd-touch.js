@@ -9,7 +9,7 @@ var jQT = new $.jQTouch({
 });
 
 // 関数、グローバル変数
-var selfEvents, searchEvents, bookmarkEvents, eventDesc, users;
+var selfEvents, bookmarkEvents, searchEvents, bookmarkEvents, eventDesc, users;
 
 function getEvents(option, callback) {
   var defaultOption = {
@@ -53,6 +53,9 @@ function getEventDesc(option, callback) {
 
 function loadEventList(events) {
   var eventsList = $('#events');
+  if (!events) {
+    events = [];
+  }
 
   // クリア
   eventsList.children().each(function(){
@@ -205,6 +208,29 @@ function loadEventDesc(event) {
 
   $('#event_url').children().remove();
   $('#event_url').append($('<a target="_blank"/>').attr('href', event['event_url']).text('ATNDで開く'));
+
+  // ブックマーク機能
+  var bm_btn = $('#bookmark-button');
+  if (bookmarked(event['event_id'])) {
+    bm_btn.text('ブックマーク外す');
+  } else {
+    bm_btn.text('ブックマークする');
+  }
+
+  // ブックマークのイベント割り当て
+  bm_btn.unbind();
+  bm_btn.bind('tap', function(e){
+    e.preventDefault();
+    e.stopPropagation();
+
+    if (bookmarked(event['event_id'])) {
+      delFromBookmark(event['event_id']);
+      bm_btn.text('ブックマークする');
+    } else {
+      addToBookmark(event['event_id']);
+      bm_btn.text('ブックマーク外す');
+    }
+  });
 }
 
 function getUsers(option, callback) {
@@ -239,6 +265,51 @@ function loadUsers(users) {
     }
     userItem.append(userLink).appendTo(userList);
   });
+}
+
+function refreshBookmarkCounter() {
+  var stored = localStorage.bookmarks;
+  if (!!stored) {
+    $('#bookmark-events+.counter').text(localStorage.bookmarks.split(',').length);
+  } else {
+    $('#bookmark-events+.counter').text('0');
+  }
+}
+
+function addToBookmark(event_id) {
+  var stored = localStorage.bookmarks;
+  if (!!stored) {
+    localStorage.bookmarks = stored.split(',').push(event_id).join(',');
+  } else {
+    localStorage.bookmarks = event_id;
+  }
+  refreshBookmarkCounter();
+}
+
+function bookmarked(event_id) {
+  var stored = localStorage.bookmarks;
+  if (!!stored) {
+    $.each(stored.split(','), function(i) {
+      if (i == event_id) {
+        return true;
+      }
+    });
+  }
+  refreshBookmarkCounter();
+  return false;
+}
+
+function delFromBookmark(event_id) {
+  var stored = localStorage.bookmarks;
+  if (!stored) return;
+
+  var new_stored = [];
+  $.each(stored.split(','), function(i) {
+    if (i != event_id) {
+      new_stored.push(i);
+    }
+  });
+  localStorage.bookmarks = new_stored.join(',');
 }
 
 // 初期化処理
@@ -280,6 +351,28 @@ $(function(){
   } else {
     jQT.goTo('#settings');
   }
+
+  // ブックマーク機能
+  var bookmarks = localStorage.bookmarks;
+  if (!!bookmarks) {
+    $('#bookmark-events+.counter').text(bookmarks.length);
+  } else {
+    $('#bookmark-events+.counter').text('0');
+  }
+
+  $('#bookmark-events').bind('tap', function(e){
+    $('#events-list').append('<div id="progress">読み込み中...</div>');
+    loadEventList(bookmarkEvents);
+    $('#progress').remove();
+  });
+
+  $('#bookmark-reset-button').bind('tap', function(e){
+    e.preventDefault();
+    e.stopPropagation();
+
+    localStorage.bookmarks = '';
+    $('#bookmark-events+.counter').text('0');
+  });
 
   $('#settings-form').submit(function(e){
     var twitter_id = $('#twitter_id').val();
