@@ -393,15 +393,6 @@ $(function(){
     }
   });
 
-  $('#bookmark-reset-button').bind('tap', function(e){
-    e.preventDefault();
-    e.stopPropagation();
-
-    localStorage.bookmarks = '';
-    refreshBookmarkCounter();
-    e.target.removeClass('active');
-  });
-
   $('#settings-form').submit(function(e){
     var twitter_id = $('#twitter_id').val();
     if (!!twitter_id) {
