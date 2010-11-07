@@ -378,7 +378,7 @@ $(function(){
 
   // ブックマーク機能
   refreshBookmarkCounter();
-  $('#bookmark-events').bind('click', function(e){
+  $('#bookmark-events').bind('tap', function(e){
     $('#events-list').append('<div id="progress">読み込み中...</div>');
     if (!!localStorage.bookmarks) {
       getEvents({event_id: localStorage.bookmarks.split(','), count: 31}, function(data){
@@ -387,6 +387,8 @@ $(function(){
         $('#progress').remove();
       });
     } else {
+      bookmarkEvents = null;
+      loadEventList(bookmarkEvents);
       $('#progress').remove();
     }
   });
